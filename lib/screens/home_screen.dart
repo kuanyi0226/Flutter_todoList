@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:project4_todolist/helpers/drawer_navigation.dart';
-import 'package:project4_todolist/src/app.dart';
+
+import '../helpers/drawer_navigation.dart';
+import './todo_screen.dart';
+import '../src/app.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,6 +17,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Useful ToDo List'),
       ),
       drawer: DrawerNavigation(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => TodoScreen())),
+        child: Icon(Icons.add),
+      ),
     );
   }
 }

@@ -38,8 +38,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   getAllCateg() async {
     _categList = <Category>[];
     var categories = await _categoryService.readCategories();
-    categories.forEach((categ) {
-      setState(() {
+    //setState() outside forEach: even no category returned from database, still setstate
+    setState(() {
+      categories.forEach((categ) {
         var categModel = Category();
         categModel.id = categ['id'];
         categModel.name = categ['name'];
