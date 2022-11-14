@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; //Date format
 
 import '../models/category.dart';
 import '../services/category_service.dart';
 import '../src/colors.dart';
+import '../models/todo.dart';
+import '../services/todo_service.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -12,9 +15,9 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
-  var todoTitleController = TextEditingController();
-  var todoDescripController = TextEditingController();
-  var todoDateController = TextEditingController();
+  var _todoTitleController = TextEditingController();
+  var _todoDescripController = TextEditingController();
+  var _todoDateController = TextEditingController();
 
   var _selectedValue;
   List<DropdownMenuItem> _categories = <DropdownMenuItem>[];
@@ -41,9 +44,35 @@ class _TodoScreenState extends State<TodoScreen> {
     _loadCategories();
   }
 
+  //Dealing with date format
+  DateTime _dateTime = DateTime.now();
+
+  _selectedTodoDate(BuildContext context) async {
+    var _pickedDate = await showDatePicker(
+        context: context,
+        initialDate: _dateTime,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+
+    if (_pickedDate != null) {
+      setState(() {
+        _dateTime = _pickedDate;
+
+        _todoDateController.text = DateFormat('yyyy-MM-dd').format(_pickedDate);
+      });
+    }
+  }
+
+  final GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
+  _showSuccessSnackBar(String message) {
+    var _snackBar = SnackBar(content: Text(message));
+    _globalKey.currentState!.showSnackBar(_snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _globalKey,
       appBar: AppBar(
         title: Text(
           'Create Todo',
@@ -55,7 +84,7 @@ class _TodoScreenState extends State<TodoScreen> {
         child: Column(children: [
           //Enter title
           TextField(
-            controller: todoTitleController,
+            controller: _todoTitleController,
             style: TextStyle(color: Colors.grey),
             decoration: InputDecoration(
               labelText: 'Title',
@@ -69,7 +98,7 @@ class _TodoScreenState extends State<TodoScreen> {
           ),
           //Enter Description
           TextField(
-            controller: todoDescripController,
+            controller: _todoDescripController,
             style: TextStyle(color: Colors.grey),
             decoration: InputDecoration(
               labelText: 'Description',
@@ -83,7 +112,7 @@ class _TodoScreenState extends State<TodoScreen> {
           ),
           //Enter Date
           TextField(
-            controller: todoDateController,
+            controller: _todoDateController,
             style: TextStyle(color: Colors.grey),
             decoration: InputDecoration(
               labelText: 'Date',
@@ -94,7 +123,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 borderSide: BorderSide(color: Colors.white),
               ),
               prefixIcon: InkWell(
-                onTap: () {},
+                onTap: () => _selectedTodoDate(context),
                 child: Icon(
                   Icons.calendar_today,
                   color: Colors.white,
@@ -119,9 +148,29 @@ class _TodoScreenState extends State<TodoScreen> {
               });
             },
           ),
+
+          //For blanks
           SizedBox(height: 30),
+
+          //Save Button
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () async {
+              var todoObject = Todo();
+
+              todoObject.title = _todoTitleController.text;
+              todoObject.description = _todoDescripController.text;
+              todoObject.isFinished = 0;
+              todoObject.category = _selectedValue.toString();
+              todoObject.todoDate = _todoDateController.text;
+
+              var _todoService = TodoService();
+              var result = await _todoService.saveTodo(todoObject);
+              if (result > 0) {
+                _showSuccessSnackBar('Created Successfully!');
+              }
+
+              print(result);
+            },
             child: Text('Save'),
             style: ElevatedButton.styleFrom(primary: subColor),
           )

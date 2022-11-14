@@ -102,6 +102,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   print(result); //id
                   Navigator.pop(context);
                   getAllCateg(); //refresh the list again to show result
+                  //Clean input field
+                  _categoryNameController.text = '';
+                  _categoryDescripController.text = '';
                   _showSuccessSnackBar('Saved successfully!');
                 },
                 child: Text('Save', style: TextStyle(color: mainColor)),
