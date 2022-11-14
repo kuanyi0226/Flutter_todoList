@@ -17,15 +17,18 @@ class _TodoScreenState extends State<TodoScreen> {
   var todoDateController = TextEditingController();
 
   var _selectedValue;
-  var _categories = <DropdownMenuItem>[];
+  List<DropdownMenuItem> _categories = <DropdownMenuItem>[];
 
   _loadCategories() async {
     var _categoryService = CategoryService();
     var categories = await _categoryService.readCategories();
     categories.forEach((categ) {
       setState(() {
-        _categories.add(DropdownMenuItem(
-          child: Text(categ['name']),
+        _categories.add(DropdownMenuItem<String>(
+          child: Text(
+            categ['name'],
+            style: TextStyle(color: Colors.white),
+          ),
           value: categ['name'],
         ));
       });
@@ -101,6 +104,7 @@ class _TodoScreenState extends State<TodoScreen> {
           ),
           //Select a category by pull down button
           DropdownButtonFormField<dynamic>(
+            dropdownColor: subColor,
             decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),

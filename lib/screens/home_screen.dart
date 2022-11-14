@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project4_todolist/src/colors.dart';
 
 import '../helpers/drawer_navigation.dart';
 import './todo_screen.dart';
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: subColor,
         onPressed: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => TodoScreen())),
         child: Icon(Icons.add),
